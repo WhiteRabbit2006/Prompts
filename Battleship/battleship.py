@@ -55,6 +55,9 @@ class Player:
         self.health = 17
 
     def turn(self, opponent):
+        # TODO: previous turn deletion
+        # TODO: print when ships are destroyed
+        # TODO: implement computer suggestions
         if self.player:
             print("\nYour board: \n" + self.get_board())
             print("Your guesses:\n" + self.get_guesses())
@@ -148,7 +151,11 @@ class Player:
                     continue
                 run = True
 
+    def smart_ship_placer(self):
+        # TODO: implement smart_ship_placer method
+
     def guess(self):
+        # TODO: disable same-square guessing
         run = True
         while run:
             # run = False
@@ -168,11 +175,14 @@ class Player:
             self.num_guessed += 1
             return guess
 
+    def smart_guess(self):
+        # TODO: implement smart_guess method
+
     def random_guesser(self):
+        # TODO: fix random guesser (can guess same square twice)
         return list(self.board)[random.randint(0, len(list(self.board)) - 1)] + str(random.randint(0, 10))
 
-    def guess_it(self, guess,
-                 board):  # given a guess and another board, calls guess_result and records outcome in self.guesses
+    def guess_it(self, guess, board):  # given a guess and another board, calls guess_result and records outcome in self.guesses
         col = int(guess[1:]) - 1
         row = guess[0].capitalize()
         if (row.capitalize() in self.board) and (-1 < col < 10):
@@ -243,8 +253,5 @@ if __name__ == '__main__':
     g = Game(True, get_bool("Are there two players? "))
     g.play()
 
-'''
-functions:
-ship/board status
-computer suggestions
-'''
+
+# TODO: make fancy display
