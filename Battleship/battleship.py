@@ -21,6 +21,7 @@ class Player:
         self.player = player
         self.give_hint = False
         self.num_guessed = 0
+        self.already_guessed = []
         self.board = {
             "A": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
             "B": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -156,21 +157,20 @@ class Player:
 
     def guess(self):
         # TODO: disable same-square guessing
-        run = True
-        while run:
-            # run = False
+        while True:
             guess = input("Guess a square that you haven't already guessed: ")
             # noinspection PyBroadException
             try:
                 col = int(guess[1:])
                 row = guess[0].capitalize()
             except BaseException:
-                # run = True
                 print("Those are not coordinates. Input a letter A-J and an integer 1-10. ex. H7")
                 continue
             if not (row.capitalize() in self.board) or not (-1 < col < 11) or not 1 < len(guess) < 4:
-                # run = True
                 print("Those are not coordinates. Input a letter A-J and an integer 1-10. ex. H7")
+                continue
+            if str(row) + str(col) in self.already_guessed:
+                print("You already guessed these coordinates.")
                 continue
             self.num_guessed += 1
             return guess
@@ -179,10 +179,14 @@ class Player:
         # TODO: implement smart_guess method
 
     def random_guesser(self):
-        # TODO: fix random guesser (can guess same square twice)
-        return list(self.board)[random.randint(0, len(list(self.board)) - 1)] + str(random.randint(0, 10))
+        guess = list(self.board)[random.randint(0, len(list(self.board)) - 1)] + str(random.randint(0, 10))
+        while guess in self.already_guessed:
+            guess = list(self.board)[random.randint(0, len(list(self.board)) - 1)] + str(random.randint(0, 10))
+        return guess
 
-    def guess_it(self, guess, board):  # given a guess and another board, calls guess_result and records outcome in self.guesses
+
+    def guess_it(self, guess, board):  # given a guess and another board, calls guess_result on other board and records outcome in self.guesses
+        self.already_guessed += guess
         col = int(guess[1:]) - 1
         row = guess[0].capitalize()
         if (row.capitalize() in self.board) and (-1 < col < 10):
