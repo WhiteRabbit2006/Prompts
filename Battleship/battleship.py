@@ -258,8 +258,9 @@ class Game:
                 clear()
                 print("Player 1 turn", str(self.p1.get_turn_num() + 1) + ":\n")
             self.p1.turn(self.p2)
-            if self.player1 and self.player2:
+            if self.p1:
                 input("\nEnd turn Player 1?")
+            if self.player1 and self.player2:
                 # input("\nStart turn Player 2? ")
                 clear()
                 print("Player 2 turn", str(self.p1.get_turn_num() + 1) + ":\n")
