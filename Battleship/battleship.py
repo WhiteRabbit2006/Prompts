@@ -1,3 +1,4 @@
+from os import system, name
 import random
 
 
@@ -5,12 +6,19 @@ def get_bool(question):
     answer = input(question)
     while True:
         if not answer.capitalize() == "Yes" and not answer.capitalize() == "No":
-            answer = input('Please answer "yes" or "no": ' + answer.capitalize())
+            answer = input('Please answer "yes" or "no": ')
             continue
         break
     if answer.capitalize() == "Yes":
         return True
     return False
+
+
+def clear():
+    if name == "nt":  # for windows name is 'nt'
+        system('cls')
+    else:  # for macos or linux name is 'posix'
+        system('clear')
 
 
 class Player:
@@ -56,7 +64,6 @@ class Player:
         self.health = 17
 
     def turn(self, opponent):
-        # TODO: previous turn deletion
         # TODO: print when ships are destroyed
         # TODO: implement computer suggestions
         if self.player:
@@ -68,6 +75,9 @@ class Player:
         else:
             guess = self.random_guesser()
             self.guess_it(guess, opponent)
+
+    def get_turn_num(self):
+        return self.num_guessed
 
     def place_ships(self):
         for ship in self.lengths:
@@ -152,11 +162,10 @@ class Player:
                     continue
                 run = True
 
-    def smart_ship_placer(self):
-        # TODO: implement smart_ship_placer method
+    # def smart_ship_placer(self):
+    # TODO: implement smart_ship_placer method
 
     def guess(self):
-        # TODO: disable same-square guessing
         while True:
             guess = input("Guess a square that you haven't already guessed: ")
             # noinspection PyBroadException
@@ -169,14 +178,14 @@ class Player:
             if not (row.capitalize() in self.board) or not (-1 < col < 11) or not 1 < len(guess) < 4:
                 print("Those are not coordinates. Input a letter A-J and an integer 1-10. ex. H7")
                 continue
-            if str(row) + str(col) in self.already_guessed:
+            if (str(row) + str(col)).capitalize() in self.already_guessed:
                 print("You already guessed these coordinates.")
                 continue
             self.num_guessed += 1
             return guess
 
-    def smart_guess(self):
-        # TODO: implement smart_guess method
+    # def smart_guess(self):
+    # TODO: implement smart_guess method
 
     def random_guesser(self):
         guess = list(self.board)[random.randint(0, len(list(self.board)) - 1)] + str(random.randint(0, 10))
@@ -184,9 +193,9 @@ class Player:
             guess = list(self.board)[random.randint(0, len(list(self.board)) - 1)] + str(random.randint(0, 10))
         return guess
 
-
-    def guess_it(self, guess, board):  # given a guess and another board, calls guess_result on other board and records outcome in self.guesses
-        self.already_guessed += guess
+    def guess_it(self, guess,
+                 board):  # given a guess and another board, calls guess_result on other board and records outcome in self.guesses
+        self.already_guessed.append(guess.capitalize())
         col = int(guess[1:]) - 1
         row = guess[0].capitalize()
         if (row.capitalize() in self.board) and (-1 < col < 10):
@@ -198,7 +207,8 @@ class Player:
             return "miss."  # miss
 
     # to be called by guess_it
-    def guess_result(self, guess):  # given a guess, returns false if it is a miss, takes hit and returns true if guess is a hit
+    def guess_result(self,
+                     guess):  # given a guess, returns false if it is a miss, takes hit and returns true if guess is a hit
         col = int(guess[1:]) - 1
         row = guess[0].capitalize()
         if self.board[row][col] == "-":
@@ -240,13 +250,22 @@ class Game:
             self.p2 = Player(False)
 
     def play(self):
+        if self.player1 or self.player2:
+            input("\nBegin?")
         while self.p1.get_health() > 0 and self.p2.get_health() > 0:
-            if self.player1 and self.player2:
-                input("\nStart turn Player 1? ")
+            # input("\nStart turn Player 1? ")
+            if self.p1:
+                clear()
+                print("Player 1 turn", str(self.p1.get_turn_num() + 1) + ":\n")
             self.p1.turn(self.p2)
             if self.player1 and self.player2:
-                input("\nStart turn Player 2? ")
+                input("\nEnd turn Player 1?")
+                # input("\nStart turn Player 2? ")
+                clear()
+                print("Player 2 turn", str(self.p1.get_turn_num() + 1) + ":\n")
             self.p2.turn(self.p1)
+            if self.player1 and self.player2:
+                input("\nEnd turn player 2?")
         if self.p1.get_health() == 0:
             print("Player 2 wins!")
         else:
@@ -256,6 +275,5 @@ class Game:
 if __name__ == '__main__':
     g = Game(True, get_bool("Are there two players? "))
     g.play()
-
 
 # TODO: make fancy display
