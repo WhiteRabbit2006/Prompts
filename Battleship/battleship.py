@@ -2,7 +2,7 @@ from os import system, name
 import random
 
 
-def get_bool(question):
+def get_bool(question):  # given a question, returns yes or no answer as True for yes and False for no
     answer = input(question)
     while True:
         if not answer.capitalize() == "Yes" and not answer.capitalize() == "No":
@@ -14,7 +14,7 @@ def get_bool(question):
     return False
 
 
-def clear():
+def clear():  # clears previous output from run screen
     if name == "nt":  # for windows name is 'nt'
         system('cls')
     else:  # for macos or linux name is 'posix'
@@ -22,15 +22,15 @@ def clear():
 
 
 class Player:
-    lengths = [5, 4, 3, 3, 2]
-    keys = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]
+    lengths = [5, 4, 3, 3, 2]  # lengths of ships
+    keys = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"]  # names of rows
 
     def __init__(self, player):  # if human is playing player should be true, otherwise false and computer plays
         self.player = player
         self.give_hint = False
         self.num_guessed = 0
         self.already_guessed = []
-        self.board = {
+        self.board = {  # board with all ships placed
             "A": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
             "B": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
             "C": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -42,7 +42,7 @@ class Player:
             "I": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
             "J": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
         }
-        self.guesses = {
+        self.guesses = {  # logs result of guesses
             "A": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
             "B": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
             "C": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -61,9 +61,9 @@ class Player:
             self.place_ships()
         else:
             self.random_ship_placer()
-        self.health = 17
+        self.health = 17  # total length of all ships; goes down one for every hit on a ship (lose at 0)
 
-    def turn(self, opponent):
+    def turn(self, opponent):  # method that runs for every turn
         # TODO: print when ships are destroyed
         # TODO: implement computer suggestions
         if self.player:
@@ -215,6 +215,7 @@ class Player:
             self.board[row][col] = "X"
             self.health -= 1
             return True
+        self.board[row][col] = "O"
         return False
 
     def get_guesses(self):
