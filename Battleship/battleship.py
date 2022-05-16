@@ -28,8 +28,8 @@ class Player:
     def __init__(self, player):  # if human is playing player should be true, otherwise false and computer plays
         self.player = player
         self.give_hint = False
-        self.num_guessed = 0
-        self.already_guessed = []
+        self.num_guessed = 0  # counts guesses
+        self.already_guessed = []  # stores previous guesses as coordinates
         self.board = {  # board with all ships placed
             "A": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
             "B": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
@@ -54,6 +54,14 @@ class Player:
             "I": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "],
             "J": [" ", " ", " ", " ", " ", " ", " ", " ", " ", " "]
         }
+        self.ship_squares = [  # will contain all squares occupied by each ship; ex. a1, a2, a3
+            [],
+            [],
+            [],
+            [],
+            []
+        ]
+        self.ship_healths = [5, 4, 3, 3, 2]  # goes down every time corresponding ship sustains a hit
         if self.player:
             self.hint = get_bool("Does this player want suggestions from the computer? (yes or no): ")
             self.random_ships = get_bool("Does this player want randomly placed ships? (yes or no): ")
@@ -79,7 +87,7 @@ class Player:
     def get_turn_num(self):
         return self.num_guessed
 
-    def place_ships(self):
+    def place_ships(self):  # takes user input to place ships as coordinates and directions
         for ship in self.lengths:
             run = True
             direction = False
@@ -109,7 +117,7 @@ class Player:
                     print("No space for a ship there. Make sure there is not another ship in the way.")
                     run = True
 
-    def place_ship(self, start, direction, ship):
+    def place_ship(self, start, direction, ship):  # populates board with ship based on parameters
         if self.open_spot(start, direction, ship):
             col = int(start[1:])
             row = start[0].capitalize()
@@ -125,7 +133,7 @@ class Player:
         return False
 
     # to be called by place_ship
-    def open_spot(self, start, direction, ship):
+    def open_spot(self, start, direction, ship):  # determines whether a ship can be placed in a certain location
         col = int(start[1:])
         row = start[0].capitalize()
         if direction:
@@ -165,7 +173,7 @@ class Player:
     # def smart_ship_placer(self):
     # TODO: implement smart_ship_placer method
 
-    def guess(self):
+    def guess(self):  # gets a guess from the player
         while True:
             guess = input("Guess a square that you haven't already guessed: ")
             # noinspection PyBroadException
@@ -187,14 +195,13 @@ class Player:
     # def smart_guess(self):
     # TODO: implement smart_guess method
 
-    def random_guesser(self):
+    def random_guesser(self):  # guesses a random square
         guess = list(self.board)[random.randint(0, len(list(self.board)) - 1)] + str(random.randint(0, 10))
         while guess in self.already_guessed:
             guess = list(self.board)[random.randint(0, len(list(self.board)) - 1)] + str(random.randint(0, 10))
         return guess
 
-    def guess_it(self, guess,
-                 board):  # given a guess and another board, calls guess_result on other board and records outcome in self.guesses
+    def guess_it(self, guess, board):  # given a guess and another board, calls guess_result on other board and records outcome in self.guesses
         self.already_guessed.append(guess.capitalize())
         col = int(guess[1:]) - 1
         row = guess[0].capitalize()
@@ -207,8 +214,7 @@ class Player:
             return "miss."  # miss
 
     # to be called by guess_it
-    def guess_result(self,
-                     guess):  # given a guess, returns false if it is a miss, takes hit and returns true if guess is a hit
+    def guess_result(self, guess):  # given a guess, returns false if it is a miss, takes hit and returns true if guess is a hit
         col = int(guess[1:]) - 1
         row = guess[0].capitalize()
         if self.board[row][col] == "-":
@@ -218,7 +224,8 @@ class Player:
         self.board[row][col] = "O"
         return False
 
-    def get_guesses(self):
+    def get_guesses(self):  # returns board of guesses (recorded hits and misses)
+        # TODO: improve formatting
         formatted_guesses = ""
         for key in self.guesses:
             formatted_guesses += (str(self.guesses[key]) + "\n")
@@ -227,16 +234,17 @@ class Player:
     def get_health(self):
         return self.health
 
-    def get_board(self):
+    def get_board(self):  # returns players board
+        # TODO: improve formatting
         formatted_board = ""
         for key in self.board:
             formatted_board += (str(self.board[key]) + "\n")
         return formatted_board
 
 
-class Game:
+class Game:  # facilitates game between two players
 
-    def __init__(self, player1, player2):
+    def __init__(self, player1, player2):  # takes two booleans which determine whether the players are human
         self.player1 = player1
         self.player2 = player2
         if player1:
@@ -250,7 +258,7 @@ class Game:
         else:
             self.p2 = Player(False)
 
-    def play(self):
+    def play(self):  # loops through turns until a player wins
         if self.player1 or self.player2:
             input("\nBegin?")
         while self.p1.get_health() > 0 and self.p2.get_health() > 0:
